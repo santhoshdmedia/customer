@@ -42,7 +42,7 @@ const Login = () => {
       console.log('Login attempt with:', { email, password });
       
       // Test the endpoint first
-      const testUrl = 'http://localhost:8080/api/customer-care/login';
+      const testUrl = 'https://printe.in/api/customer-care/login';
       console.log('Testing URL:', testUrl);
       
       const testResponse = await fetch(testUrl, {
@@ -109,7 +109,7 @@ if (result ) {
               Customer Care Portal
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Backend: http://localhost:8080
+              Backend: https://printe.in
             </Typography>
           </Box>
 
@@ -174,7 +174,7 @@ if (result ) {
             </Typography>
             
             <Typography variant="caption" color="text.secondary" align="center" sx={{ mt: 1, display: 'block' }}>
-              Backend running on: http://localhost:8080
+              Backend running on: https://printe.in
             </Typography>
           </form>
         </Paper>

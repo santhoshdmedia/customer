@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Use environment variable or default to 8080
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://printe.in/api';
 
 const api = axios.create({
   baseURL: API_URL,

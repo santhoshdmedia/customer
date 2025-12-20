@@ -9,7 +9,7 @@ export default defineConfig({
     // port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',  // Change from 5000 to 8080
+        target: 'https://printe.in',  // Change from 5000 to 8080
         changeOrigin: true,
       }
     }
