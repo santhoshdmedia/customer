@@ -10,7 +10,8 @@ import {
   Toolbar,
   Box,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Typography
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -27,15 +28,20 @@ const drawerWidth = 240;
 const adminMenuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin', 'manager', 'agent'] },
   { text: 'Leads', icon: <PeopleIcon />, path: '/leads', roles: ['admin', 'manager', 'agent'] },
-  // { text: 'Callbacks', icon: <CallbackIcon />, path: '/callbacks', roles: ['admin', 'manager', 'agent'] },
   { text: 'Customer Care', icon: <AssignmentIcon />, path: '/customer-care', roles: ['admin', 'manager'] },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin','manager'] },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin', 'manager'] },
 ];
 
 const customerCareMenuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Leads', icon: <PeopleIcon />, path: '/leads' },
   { text: 'Callbacks', icon: <CallbackIcon />, path: '/callbacks' },
+  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+];
+
+const agentMenuItems = [
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+  { text: 'Leads', icon: <PeopleIcon />, path: '/leads' },
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ];
 
@@ -46,15 +52,23 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // Get menu items based on user role
   const getMenuItems = () => {
-    if (user.role === 'customer_care') {
-      return customerCareMenuItems;
+    if (!user || !user.role) {
+      return customerCareMenuItems; // Default fallback
     }
-    
-    // Filter admin menu items based on user role
-    return adminMenuItems.filter(item => 
-      item.roles.includes(user.role)
-    );
+
+    switch (user.role) {
+      case 'customer_care':
+        return customerCareMenuItems;
+      case 'agent':
+        return agentMenuItems;
+      case 'admin':
+      case 'manager':
+        return adminMenuItems.filter(item => item.roles.includes(user.role));
+      default:
+        return customerCareMenuItems;
+    }
   };
 
   const menuItems = getMenuItems();
@@ -70,11 +84,11 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
             key={item.text}
             onClick={() => {
               navigate(item.path);
-              if (isMobile) {
-                onDrawerToggle(); // Close drawer on mobile after navigation
+              if (isMobile && onDrawerToggle) {
+                onDrawerToggle();
               }
             }}
-            selected={location.pathname.startsWith(item.path)}
+            selected={location.pathname === item.path || location.pathname.startsWith(`${item.path}/`)}
             sx={{
               mb: 1,
               borderRadius: 1,
@@ -89,14 +103,16 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
                 },
               },
               '&:hover': {
-                backgroundColor: 'primary.light',
+                backgroundColor: 'action.hover',
                 '& .MuiListItemIcon-root': {
                   color: 'primary.main',
                 },
               },
             }}
           >
-            <ListItemIcon sx={{ color: 'text.secondary' }}>
+            <ListItemIcon sx={{ 
+              color: location.pathname.startsWith(item.path) ? 'inherit' : 'text.secondary' 
+            }}>
               {item.icon}
             </ListItemIcon>
             <ListItemText 
@@ -108,13 +124,26 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
           </ListItem>
         ))}
       </List>
-      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-        <ListItemText 
-          primary={user.name || user.email}
-          secondary={`Role: ${user.role}`}
-          primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
-          secondaryTypographyProps={{ fontSize: 12 }}
-        />
+      <Box sx={{ 
+        p: 2, 
+        borderTop: 1, 
+        borderColor: 'divider',
+        backgroundColor: 'background.default'
+      }}>
+        {user ? (
+          <>
+            <Typography variant="subtitle2" sx={{ fontWeight: 500, color: 'text.primary' }}>
+              {user.name || user.email}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Role: {user.role || 'Not assigned'}
+            </Typography>
+          </>
+        ) : (
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            User information not available
+          </Typography>
+        )}
       </Box>
     </Box>
   );
@@ -129,13 +158,15 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
         open={mobileOpen}
         onClose={onDrawerToggle}
         ModalProps={{ 
-          keepMounted: true, // Better mobile performance
+          keepMounted: true,
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: drawerWidth,
+            borderRight: '1px solid',
+            borderColor: 'divider',
           },
         }}
       >
@@ -150,6 +181,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
             width: drawerWidth,
             borderRight: '1px solid',
             borderColor: 'divider',
+            backgroundColor: 'background.paper',
           },
         }}
         open

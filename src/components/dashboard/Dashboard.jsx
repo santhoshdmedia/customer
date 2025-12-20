@@ -33,6 +33,11 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recentLeads, setRecentLeads] = useState([]);
+  // useEffect(()=>{
+  //   if (user) {
+  //     window.location.reload()
+  //   }
+  // },[user])
 
   const fetchDashboardData = async () => {
     setLoading(true);
