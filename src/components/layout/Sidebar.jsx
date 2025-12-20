@@ -35,7 +35,6 @@ const adminMenuItems = [
 const customerCareMenuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Leads', icon: <PeopleIcon />, path: '/leads' },
-  { text: 'Callbacks', icon: <CallbackIcon />, path: '/callbacks' },
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ];
 

@@ -11,15 +11,18 @@ import {
   Typography,
   Box,
   Alert,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
-import { Lock as LockIcon } from '@mui/icons-material';
+import { Lock as LockIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -58,18 +61,17 @@ const Login = () => {
       console.log('Test response data:', testData);
       
       // Now use auth service
-     // In handleSubmit function
-const result = await login(email, password);
+      // In handleSubmit function
+      const result = await login(email, password);
 
-if (result ) {
-  toast.success(result.message || 'Login successful!');
-  navigate('/dashboard');
-} else {
-  setError(result?.message || 'Login failed');
-  toast.error(result?.message || 'Login failed');
-}
+      if (result) {
+        toast.success(result.message || 'Login successful!');
+        navigate('/dashboard');
+      } else {
+        setError(result?.message || 'Login failed');
+        toast.error(result?.message || 'Login failed');
+      }
       
-    
     } catch (error) {
       console.error('Full error:', error);
       setError(`Login error: ${error.message || 'Check backend connection'}`);
@@ -85,6 +87,11 @@ if (result ) {
     setPassword('password123');
   };
 
+  // Toggle password visibility
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Container maxWidth="sm">
       <Box
@@ -92,7 +99,7 @@ if (result ) {
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
       >
         <Paper
@@ -100,21 +107,30 @@ if (result ) {
           sx={{
             p: 4,
             width: '100%',
-            maxWidth: 400
+            maxWidth: 400,
+            backgroundColor: '#fff9c4' // Yellow paper background
           }}
         >
           <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <LockIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
-            <Typography variant="h5" component="h1" gutterBottom>
+            <LockIcon sx={{ 
+              fontSize: 40, 
+              color: '#ffd600', // Yellow color for icon
+              mb: 1 
+            }} />
+            <Typography variant="h5" component="h1" gutterBottom sx={{ color: '#ff8f00' }}>
               Customer Care Portal
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: '#ff9800' }}>
               Backend: https://printe.in
             </Typography>
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ 
+              mb: 2,
+              backgroundColor: '#ffebee',
+              color: '#c62828'
+            }}>
               {error}
             </Alert>
           )}
@@ -130,18 +146,70 @@ if (result ) {
               required
               disabled={loading}
               autoComplete="email"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#ffd600',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#ffca28',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#ffb300',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#ff8f00',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#ff6f00',
+                }
+              }}
             />
 
             <TextField
               fullWidth
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               margin="normal"
               required
               disabled={loading}
               autoComplete="current-password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                      sx={{ color: '#ff9800' }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#ffd600',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#ffca28',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#ffb300',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#ff8f00',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#ff6f00',
+                }
+              }}
             />
 
             <Button
@@ -150,32 +218,26 @@ if (result ) {
               variant="contained"
               size="large"
               disabled={loading}
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ 
+                mt: 3, 
+                mb: 2,
+                backgroundColor: '#ffd600',
+                color: '#212121',
+                '&:hover': {
+                  backgroundColor: '#ffca28',
+                },
+                '&:disabled': {
+                  backgroundColor: '#ffecb3',
+                  color: '#9e9e9e'
+                }
+              }}
             >
               {loading ? (
-                <CircularProgress size={24} color="inherit" />
+                <CircularProgress size={24} sx={{ color: '#ff8f00' }} />
               ) : (
                 'Sign In'
               )}
             </Button>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              size="small"
-              onClick={useTestCredentials}
-              sx={{ mb: 2 }}
-            >
-              Use Test Credentials
-            </Button>
-
-            <Typography variant="body2" color="text.secondary" align="center">
-              Test: admin@example.com / password123
-            </Typography>
-            
-            <Typography variant="caption" color="text.secondary" align="center" sx={{ mt: 1, display: 'block' }}>
-              Backend running on: https://printe.in
-            </Typography>
           </form>
         </Paper>
       </Box>

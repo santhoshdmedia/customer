@@ -33,11 +33,6 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recentLeads, setRecentLeads] = useState([]);
-  // useEffect(()=>{
-  //   if (user) {
-  //     window.location.reload()
-  //   }
-  // },[user])
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -84,31 +79,45 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh',
+        // backgroundColor: '#fffde7'
+      }}>
+        <CircularProgress sx={{ color: '#ffd600' }} />
       </Box>
     );
   }
 
   return (
-    <Box>
+    <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4" component="h1">
+        <Typography variant="h4" component="h1" sx={{ color: '#ff8f00', fontWeight: 'bold' }}>
           Welcome, {dashboardData?.member_info?.name || 'User'}
         </Typography>
         <Button
           variant="outlined"
           startIcon={<RefreshIcon />}
           onClick={fetchDashboardData}
+          sx={{
+            borderColor: '#ffd600',
+            color: '#ff8f00',
+            '&:hover': {
+              borderColor: '#ffca28',
+              backgroundColor: 'rgba(255, 214, 0, 0.08)',
+            }
+          }}
         >
           Refresh
         </Button>
       </Box>
 
       {/* User Role Badge */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" color="text.secondary">
-          Role: <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>
+      <Box sx={{ mb: 3, p: 2, backgroundColor: '#fff9c4', borderRadius: 1 }}>
+        <Typography variant="subtitle1" sx={{ color: '#ff6f00', fontWeight: 'bold' }}>
+          Role: <span style={{ textTransform: 'capitalize', color: '#ff9800' }}>
             {dashboardData?.member_info?.role}
           </span>
         </Typography>
@@ -121,7 +130,7 @@ const Dashboard = () => {
             title="Total Leads"
             value={dashboardData?.stats?.total_leads || 0}
             icon={<PeopleIcon />}
-            color="#1976d2"
+            color="#ffd600"
           />
         </Grid>
 
@@ -130,7 +139,7 @@ const Dashboard = () => {
             title="Today's Callbacks"
             value={dashboardData?.stats?.todays_callbacks || 0}
             icon={<PhoneCallbackIcon />}
-            color="#2e7d32"
+            color="#ffca28"
           />
         </Grid>
 
@@ -139,16 +148,16 @@ const Dashboard = () => {
             title="Overdue Callbacks"
             value={dashboardData?.stats?.overdue_callbacks || 0}
             icon={<ScheduleIcon />}
-            color="#ed6c02"
+            color="#ffb300"
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="Today's Calls"
-            value={dashboardData?.stats?.todays_calls || 0}
-            icon={<CallIcon />}
-            color="#9c27b0"
+            title="New Leads Today"
+            value={dashboardData?.stats?.new_leads_today || 0}
+            icon={<PersonAddIcon />}
+            color="#ffa000"
           />
         </Grid>
 
@@ -157,16 +166,16 @@ const Dashboard = () => {
             title="Conversion Rate"
             value={`${dashboardData?.stats?.conversion_rate || '0.00'}%`}
             icon={<TrendingUpIcon />}
-            color="#2196f3"
+            color="#ff8f00"
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="New Leads"
-            value={getStatusCount('New')}
-            icon={<PersonAddIcon />}
-            color="#4caf50"
+            title="Assigned Leads"
+            value={dashboardData?.stats?.assigned_leads || 0}
+            icon={<AssignmentIcon />}
+            color="#ff6f00"
           />
         </Grid>
 
@@ -181,10 +190,10 @@ const Dashboard = () => {
 
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="Interested"
-            value={getStatusCount('Interested')}
-            icon={<TrendingUpIcon />}
-            color="#9c27b0"
+            title="Pending Calls"
+            value={dashboardData?.stats?.pending_calls || 0}
+            icon={<CallIcon />}
+            color="#ffab00"
           />
         </Grid>
       </Grid>
@@ -192,8 +201,13 @@ const Dashboard = () => {
       <Grid container spacing={3}>
         {/* Recent Leads */}
         <Grid item xs={12} lg={8}>
-          <Paper sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 2, 
+            height: '100%',
+            backgroundColor: '#fff9c4',
+            border: '1px solid #ffd600'
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#ff6f00', fontWeight: 'bold' }}>
               Recent Leads
             </Typography>
             <LeadPriorityList leads={recentLeads} />
@@ -202,8 +216,13 @@ const Dashboard = () => {
 
         {/* Lead Distribution */}
         <Grid item xs={12} lg={4}>
-          <Paper sx={{ p: 2, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 2, 
+            mb: 3,
+            backgroundColor: '#fff9c4',
+            border: '1px solid #ffd600'
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#ff6f00', fontWeight: 'bold' }}>
               Lead Distribution by Status
             </Typography>
             <Box sx={{ mt: 2 }}>
@@ -217,22 +236,36 @@ const Dashboard = () => {
                     mb: 1,
                     p: 1.5,
                     borderRadius: 1,
-                    bgcolor: 'action.hover',
+                    bgcolor: '#fff59d',
+                    border: '1px solid #ffd600',
                     '&:hover': {
-                      bgcolor: 'action.selected',
+                      bgcolor: '#ffecb3',
+                      transform: 'translateY(-2px)',
+                      transition: 'all 0.2s',
                     },
                   }}
                 >
-                  <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                  <Typography variant="body2" sx={{ 
+                    textTransform: 'capitalize',
+                    color: '#ff6f00',
+                    fontWeight: 'medium'
+                  }}>
                     {item._id}
                   </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  <Typography variant="body1" sx={{ 
+                    fontWeight: 'bold',
+                    color: '#ff8f00'
+                  }}>
                     {item.count}
                   </Typography>
                 </Box>
               ))}
               {getStatusCountsArray().length === 0 && (
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                <Typography variant="body2" sx={{ 
+                  color: '#ff9800', 
+                  textAlign: 'center', 
+                  py: 2 
+                }}>
                   No lead status data available
                 </Typography>
               )}
@@ -240,34 +273,70 @@ const Dashboard = () => {
           </Paper>
 
           {/* Quick Stats Summary */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 2,
+            backgroundColor: '#fff9c4',
+            border: '1px solid #ffd600'
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#ff6f00', fontWeight: 'bold' }}>
               Quick Summary
             </Typography>
             <Box sx={{ mt: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, p: 1.5, bgcolor: '#e3f2fd', borderRadius: 1 }}>
-                <Typography variant="body2">Member Since</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                mb: 2, 
+                p: 1.5, 
+                bgcolor: '#fff8e1', 
+                borderRadius: 1,
+                border: '1px solid #ffecb3'
+              }}>
+                <Typography variant="body2" sx={{ color: '#ff8f00' }}>Member Since</Typography>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 'bold',
+                  color: '#ff6f00'
+                }}>
                   {dashboardData?.member_info?.createdAt 
                     ? new Date(dashboardData.member_info.createdAt).toLocaleDateString()
                     : 'N/A'}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, p: 1.5, bgcolor: '#f3e5f5', borderRadius: 1 }}>
-                <Typography variant="body2">Account Status</Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                mb: 2, 
+                p: 1.5, 
+                bgcolor: '#fff8e1', 
+                borderRadius: 1,
+                border: '1px solid #ffecb3'
+              }}>
+                <Typography variant="body2" sx={{ color: '#ff8f00' }}>Account Status</Typography>
                 <Typography 
                   variant="body2" 
                   sx={{ 
                     fontWeight: 'bold',
-                    color: dashboardData?.member_info?.isActive ? 'success.main' : 'error.main'
+                    color: dashboardData?.member_info?.isActive ? '#2e7d32' : '#d32f2f'
                   }}
                 >
                   {dashboardData?.member_info?.isActive ? 'Active' : 'Inactive'}
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: '#e8f5e9', borderRadius: 1 }}>
-                <Typography variant="body2">Total Call Tasks</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                p: 1.5, 
+                bgcolor: '#fff8e1', 
+                borderRadius: 1,
+                border: '1px solid #ffecb3'
+              }}>
+                <Typography variant="body2" sx={{ color: '#ff8f00' }}>Total Call Tasks</Typography>
+                <Typography variant="body2" sx={{ 
+                  fontWeight: 'bold',
+                  color: '#ff6f00'
+                }}>
                   {(dashboardData?.stats?.todays_callbacks || 0) + (dashboardData?.stats?.overdue_callbacks || 0)}
                 </Typography>
               </Box>

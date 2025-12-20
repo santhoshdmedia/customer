@@ -598,9 +598,7 @@ const CustomerCareSettings = () => {
             <Typography variant="h4" component="h1">
               {id ? 'Edit Customer Care User' : 'My Profile Settings'}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              User ID: {userId}
-            </Typography>
+         
           </Box>
         </Box>
         
@@ -624,11 +622,11 @@ const CustomerCareSettings = () => {
       </Box>
 
       {/* User Info Card */}
-      <Card sx={{ mb: 3, bgcolor: 'primary.light' }}>
+      <Card sx={{ mb: 3, bgcolor: '#fef9e8' }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Avatar sx={{ width: 60, height: 60, bgcolor: 'primary.main' }}>
+              <Avatar sx={{ width: 60, height: 60, bgcolor: '#f2c41a' }}>
                 {formData.name.charAt(0).toUpperCase()}
               </Avatar>
             </Grid>
@@ -772,12 +770,12 @@ const CustomerCareSettings = () => {
             Warning: Deleting this user will remove all their assigned leads and activity history.
           </Alert>
         </DialogContent>
-        {/* <DialogActions>
+        <DialogActions>
           <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
           <Button onClick={handleDelete} color="error" variant="contained">
             Delete Permanently
           </Button>
-        </DialogActions> */}
+        </DialogActions> 
       </Dialog>
 
    
