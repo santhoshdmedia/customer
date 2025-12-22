@@ -53,6 +53,7 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
 const CustomerCareList = () => {
+  const {user}=useAuth();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -84,8 +85,9 @@ const CustomerCareList = () => {
       setLoading(true);
       const response = await customerCareService.getAllUsers();
       console.log(response,"cus");
+      const filteredUser=response.data.filter((cus)=>cus._id !=user._id)
       
-      setUsers(response.data || []);
+      setUsers(filteredUser || []);
     } catch (error) {
       toast.error('Failed to load users');
       console.error(error);

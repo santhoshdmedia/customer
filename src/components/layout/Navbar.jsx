@@ -46,7 +46,7 @@ const Navbar = ({ onDrawerToggle }) => {
       sx={{
         width: { sm: `calc(100% - 240px)` },
         ml: { sm: '240px' },
-        background:{sm:'#f2c41a'}
+        // background:{sm:'#f2c41a'}
       }}
     >
       <Toolbar>

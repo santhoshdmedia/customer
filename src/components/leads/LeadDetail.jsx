@@ -53,8 +53,8 @@ const LeadDetail = () => {
     notes: '',
     next_followup: null,
   });
-  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc' for follow-up date sorting
-  const [sortBy, setSortBy] = useState('next_followup'); // Column to sort by
+  const [sortOrder, setSortOrder] = useState('asc'); 
+  const [sortBy, setSortBy] = useState('next_followup'); 
 
   // Define status hierarchy for disabling previous statuses
   const statusHierarchy = [
