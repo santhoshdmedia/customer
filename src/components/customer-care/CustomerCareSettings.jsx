@@ -622,11 +622,11 @@ const CustomerCareSettings = () => {
       </Box>
 
       {/* User Info Card */}
-      <Card sx={{ mb: 3, bgcolor: '#fef9e8' }}>
+      <Card sx={{ mb: 3, }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Avatar sx={{ width: 60, height: 60, bgcolor: '#f2c41a' }}>
+              <Avatar sx={{ width: 60, height: 60, }}>
                 {formData.name.charAt(0).toUpperCase()}
               </Avatar>
             </Grid>
