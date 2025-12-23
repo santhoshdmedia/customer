@@ -265,10 +265,7 @@ const Navbar = ({ onDrawerToggle }) => {
               },
             }}
           >
-            <MenuItem onClick={handleProfile}>
-              <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
-              Profile
-            </MenuItem>
+           
             <MenuItem onClick={handleSettings}>
               <SettingsIcon sx={{ mr: 2, fontSize: 20 }} />
               Settings
