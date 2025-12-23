@@ -14,6 +14,7 @@ import LeadDetail from './components/leads/LeadDetail';
 import CustomerCareList from './components/customer-care/CustomerCareList';
 import CustomerCareForm from './components/customer-care/CustomerCareForm';
 import CustomerCareSettings from './components/customer-care/CustomerCareSettings';
+import UserPanel from './components/user/UserPanel';
 
 // Create theme
 const theme = createTheme({
@@ -48,6 +49,7 @@ function App() {
               <Route path="leads" element={<LeadList />} />
               <Route path="leads/:id" element={<LeadDetail />} />
               <Route path="customer-care" element={<CustomerCareList />} />
+              <Route path="users" element={<UserPanel />} />
               <Route path="settings" element={<CustomerCareSettings />} />
             </Route>
             

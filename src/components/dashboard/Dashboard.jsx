@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   Grid,
   Paper,
   Typography,
-  Card,
-  CardContent,
   CircularProgress,
   Button,
 } from '@mui/material';
 import {
   People as PeopleIcon,
-  Assignment as AssignmentIcon,
-  PersonAdd as PersonAddIcon,
-  CallMissed as CallMissedIcon,
   TrendingUp as TrendingUpIcon,
   Refresh as RefreshIcon,
   PhoneCallback as PhoneCallbackIcon,
   Schedule as ScheduleIcon,
-  Call as CallIcon,
 } from '@mui/icons-material';
 import { leadService } from '../../services/lead.service';
 import { toast } from 'react-hot-toast';
@@ -26,73 +20,37 @@ import StatsCard from './StatsCard';
 import LeadPriorityList from './LeadPriorityList';
 import { useAuth } from '../../context/AuthContext';
 
+// Colors defined outside component or at the very top
+const colors = {
+  primary: '#4361ee',
+  secondary: '#3a0ca3',
+  accent: '#f72585',
+  success: '#4cc9f0',
+  warning: '#ff9e00',
+  danger: '#f72585',
+  info: '#7209b7',
+  light: '#f8f9fa',
+  dark: '#212529',
+  gradient: {
+    primary: 'linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)',
+    secondary: 'linear-gradient(135deg, #f72585 0%, #b5179e 100%)',
+    success: 'linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%)',
+    warning: 'linear-gradient(135deg, #ff9e00 0%, #ff5400 100%)',
+  }
+};
+
 const Dashboard = () => {
-  const { user } = useAuth();
-  console.log(user,"user");
+  const { user, initialized } = useAuth();
   
+  // All hooks declared at the top
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recentLeads, setRecentLeads] = useState([]);
+  
+  const hasFetchedRef = useRef(false);
+  const isMountedRef = useRef(true);
 
-  // Modern color palette
-  const colors = {
-    primary: '#4361ee',     // Vibrant blue
-    secondary: '#3a0ca3',   // Deep purple
-    accent: '#f72585',      // Pink accent
-    success: '#4cc9f0',     // Light blue
-    warning: '#ff9e00',     // Orange
-    danger: '#f72585',      // Pink-red
-    info: '#7209b7',        // Purple
-    light: '#f8f9fa',       // Light background
-    dark: '#212529',        // Dark text
-    gradient: {
-      primary: 'linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)',
-      secondary: 'linear-gradient(135deg, #f72585 0%, #b5179e 100%)',
-      success: 'linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%)',
-      warning: 'linear-gradient(135deg, #ff9e00 0%, #ff5400 100%)',
-    }
-  };
-
-  const fetchDashboardData = async () => {
-    setLoading(true);
-    try {
-      const statsResponse = await leadService.getDashboardStats(user._id);
-      console.log('Dashboard Stats:', statsResponse.data.data);
-      
-      setDashboardData(statsResponse.data.data);
-
-      const leadsResponse = await leadService.getAllLeads({
-        page: 1,
-        limit: 5,
-      });
-      setRecentLeads(leadsResponse.data.data);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to fetch dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const getStatusCount = (status) => {
-    if (!dashboardData?.stats?.leads_by_status) return 0;
-    return dashboardData.stats.leads_by_status[status] || 0;
-  };
-
-  const getStatusCountsArray = () => {
-    if (!dashboardData?.stats?.leads_by_status) return [];
-    return Object.entries(dashboardData.stats.leads_by_status).map(([status, count]) => ({
-      _id: status,
-      count: count
-    }));
-  };
-
-  // Status color mapping
-  const getStatusColor = (status) => {
+  const getStatusColor = useCallback((status) => {
     const colorMap = {
       'New': colors.primary,
       'Contacted': colors.success,
@@ -103,9 +61,62 @@ const Dashboard = () => {
       'default': colors.primary
     };
     return colorMap[status] || colorMap.default;
-  };
+  }, []);
 
-  if (loading) {
+  const fetchDashboardData = useCallback(async () => {
+    if (!user?._id || !isMountedRef.current) return;
+    
+    setLoading(true);
+    try {
+      const statsResponse = await leadService.getDashboardStats(user._id);
+      setDashboardData(statsResponse.data.data);
+
+      const leadsResponse = await leadService.getAllLeads({
+        page: 1,
+        limit: 5,
+      });
+      setRecentLeads(leadsResponse.data.data);
+      
+      hasFetchedRef.current = true;
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to fetch dashboard data');
+    } finally {
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    if (user?._id && initialized && !hasFetchedRef.current) {
+      fetchDashboardData();
+    } else if (!user && hasFetchedRef.current) {
+      hasFetchedRef.current = false;
+      setDashboardData(null);
+      setRecentLeads([]);
+      setLoading(false);
+    } else if (!user) {
+      setLoading(false);
+    }
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [user, initialized, fetchDashboardData]);
+
+  const getStatusCountsArray = useCallback(() => {
+    if (!dashboardData?.stats?.leads_by_status) return [];
+    return Object.entries(dashboardData.stats.leads_by_status).map(([status, count]) => ({
+      _id: status,
+      count: count
+    }));
+  }, [dashboardData]);
+
+  // Loading state
+  if (loading && !dashboardData) {
     return (
       <Box sx={{ 
         display: 'flex', 
@@ -115,6 +126,34 @@ const Dashboard = () => {
         background: colors.gradient.primary
       }}>
         <CircularProgress sx={{ color: '#ffffff' }} />
+        <Typography variant="body1" sx={{ ml: 2, color: '#ffffff' }}>
+          Loading dashboard data...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // No data state
+  if (!loading && !dashboardData) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh',
+        flexDirection: 'column',
+        gap: 2
+      }}>
+        <Typography variant="h6" color="error">
+          No dashboard data available
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={fetchDashboardData}
+          startIcon={<RefreshIcon />}
+        >
+          Retry Loading Data
+        </Button>
       </Box>
     );
   }
@@ -202,11 +241,7 @@ const Dashboard = () => {
           { title: "Total Leads", value: dashboardData?.stats?.total_leads || 0, icon: <PeopleIcon />, color: colors.gradient.primary },
           { title: "Today's Callbacks", value: dashboardData?.stats?.todays_callbacks || 0, icon: <PhoneCallbackIcon />, color: colors.gradient.success },
           { title: "Overdue Callbacks", value: dashboardData?.stats?.overdue_callbacks || 0, icon: <ScheduleIcon />, color: colors.gradient.warning },
-          // { title: "New Leads Today", value: dashboardData?.stats?.new_leads_today || 0, icon: <PersonAddIcon />, color: colors.gradient.secondary },
           { title: "Conversion Rate", value: `${dashboardData?.stats?.conversion_rate || '0.00'}%`, icon: <TrendingUpIcon />, color: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
-          // { title: "Assigned Leads", value: dashboardData?.stats?.assigned_leads || 0, icon: <AssignmentIcon />, color: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' },
-          // { title: "Follow-up Needed", value: getStatusCount('Follow-up'), icon: <CallMissedIcon />, color: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
-          // { title: "Pending Calls", value: dashboardData?.stats?.pending_calls || 0, icon: <CallIcon />, color: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)' },
         ].map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <StatsCard

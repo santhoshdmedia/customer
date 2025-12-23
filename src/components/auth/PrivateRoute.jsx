@@ -1,10 +1,12 @@
 // src/components/auth/PrivateRoute.jsx
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { CircularProgress, Box } from '@mui/material';
+import { useAuth } from '../../context/AuthContext';
 
-const PrivateRoute = ({ children, roles = [] }) => {
-  const { isAuthenticated, getUserRole, loading } = useAuth();
+const PrivateRoute = ({ children, allowedRoles = [] }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -13,7 +15,8 @@ const PrivateRoute = ({ children, roles = [] }) => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh'
+          height: '100vh',
+          width: '100vw',
         }}
       >
         <CircularProgress />
@@ -21,16 +24,12 @@ const PrivateRoute = ({ children, roles = [] }) => {
     );
   }
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/login" />;
-  // }
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-  // Check role-based access
-  if (roles.length > 0) {
-    const userRole = getUserRole();
-    if (!roles.includes(userRole)) {
-      return <Navigate to="/dashboard" />;
-    }
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
