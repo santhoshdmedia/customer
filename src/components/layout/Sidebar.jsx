@@ -46,6 +46,7 @@ const menuItemsByRole = {
   manager: [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Leads', icon: <PeopleIcon />, path: '/leads' },
+    { text: 'Users', icon: <GroupIcon />, path: '/users' },
     { text: 'Customer Care', icon: <AssignmentIcon />, path: '/customer-care' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ],
